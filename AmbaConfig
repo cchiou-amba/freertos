@@ -66,6 +66,18 @@ config CONFIG_CM3_SPI
 	bool "Enable SPI Driver"
 	default n
 
+choice
+	prompt "Data Transfer Mode"
+	depends on CONFIG_CM3_SPI
+	default CONFIG_CM3_SPI_POLLING_MODE
+
+config CONFIG_CM3_SPI_POLLING_MODE
+	bool "Polling"
+
+config CONFIG_CM3_SPI_INTERRUPT_MODE
+	bool "Interrupt"
+endchoice
+
 menuconfig CONFIG_CM3_RPMSG
 	bool "Enable RPMsg Driver"
 	default n

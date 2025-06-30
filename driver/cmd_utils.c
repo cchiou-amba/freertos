@@ -393,7 +393,7 @@ static int cmd_spi(const int argc, char **argv)
 	buff_fill(tx_buf, len);
 	memset(rx_buf, 0xff, len);
 
-#if 1 /* Polling */
+#ifdef CONFIG_CM3_SPI_POLLING_MODE
 	switch (spi_xfer_poll(spi, tx_buf, rx_buf, len, 5000)) {
 	case 0:
 		break;

@@ -341,7 +341,7 @@ int spi_init(spi_t *spi)
 	if (spi->cfg.spiclk != 0 && spi->cfg.bitrate != 0) {
 		writel(spi->base + SPI_BAUDR_OFFSET, (spi->cfg.spiclk / spi->cfg.bitrate));
 	} else {
-		BUG_ON(1, "SPI-bitrate config err, \
+		BUG_ON(spi->cfg.master == pdTRUE, "SPI-bitrate config err, \
 		spi->cfg.spiclk:%d, spi->cfg.bitrate:%d\n", spi->cfg.spiclk, spi->cfg.bitrate);
 	}
 
