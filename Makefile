@@ -306,13 +306,16 @@ clean:
 	@echo "Clean $(ARCH) complete!"
 
 # Install the firmware to the target
-# proc use the original bin and amboot use the head version
+# proc use the original bin and prboot use the header version
+# header: 8bytes of 0x03 or 0x52
+# struct header {
+# 	uint8_t header[8];
+# }
 install:
 ifneq ("$(CONFIG_BOOT_$(ARCH))","y")
 	@install -D $(TARGET_BIN) $(ENV_INS_ROOT)/lib/firmware/rproc-ambarella-rproc-fw
 endif
-#ARCH_IMG.bin is the header version for amboot to load
 	@install -D $(TARGET_HDR_BIN) $(ENV_IMG_ROOT)/$(ARCH)_IMG.bin
-#For Debug
 	@install -D $(TARGET_BIN) $(ENV_IMG_ROOT)/$(ARCH).bin
+	@install -D $(TARGET_BIN) $(ENV_IMG_ROOT)/$(ARCH_LOWER_CASE).bin
 
