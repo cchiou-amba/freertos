@@ -58,9 +58,9 @@ int main(void)
 {
 	board_hw_init();
 	boot_message();
-	shell_task_init();
 
-	/* app tasks init */
+	/* tasks init */
+	shell_task_init();
 	app_task_init();
 	app1_task_init();
 	app2_task_init();

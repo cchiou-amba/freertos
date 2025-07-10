@@ -428,3 +428,67 @@ static int cmd_spi(const int argc, char **argv)
 }
 CMD_EXPORT_ALIAS(cmd_spi, spi, spi [-l length] dev_name);
 #endif
+
+#if 0
+/* timer test case */
+#define BIT_MASK	0x2000000
+#define GPIO_PIN	25
+
+void timer0_intr1(void)
+{
+	static uint32_t value = BIT_MASK;
+	value ^= BIT_MASK;
+	writel(GPIO0_BASE + GPIO_DATA_OFFSET, value);
+}
+
+static int cmd_timer(int argc, char *argv[])
+{
+	uint32_t g_ticks = 0;
+	uint32_t n_usec, time_ctrl, ticks_per_us_apb, adjust = 0;
+
+	ticks_per_us_apb = current_apbfreq() / 1000 / 1000;
+	if (argc > 1)
+		strtou32(argv[1], &n_usec, NULL);
+	if (argc > 2)
+		strtou32(argv[2], &adjust, NULL);
+
+	g_ticks = n_usec * ticks_per_us_apb;
+	printf("Apb_clk:%u  cycle_us:%u and cycle_ticks:%u adjust=%u\n",
+			current_apbfreq(),n_usec, g_ticks, adjust);
+
+	gpio_config_sw_out(GPIO_PIN);
+
+	writel(TIMER0_BASE + TIMER0_STATUS_OFFSET, g_ticks);  /* anyvalue is good */
+	writel(TIMER0_BASE + TIMER0_RELOAD_OFFSET, g_ticks);
+	writel(TIMER0_BASE + TIMER0_MATCH1_OFFSET, (g_ticks/2));
+	writel(TIMER0_BASE + TIMER0_MATCH2_OFFSET, 0);
+	time_ctrl = readl(TIMER0_BASE + TIMER_CTRL_OFFSET);
+	time_ctrl = 0x1;
+	writel(TIMER0_BASE + TIMER_CTRL_OFFSET, time_ctrl);
+
+	return 0;
+}
+CMD_EXPORT_ALIAS(cmd_timer, timer, timer n_us);
+
+void timer0_run_test(uint32_t n_usec)
+{
+	uint32_t g_ticks = 0;
+	uint32_t time_ctrl, ticks_per_us_apb;
+
+	ticks_per_us_apb = current_apbfreq() / 1000 / 1000;
+	g_ticks = n_usec * ticks_per_us_apb;
+
+	printf("Apb_clk:%u  cycle_us:%u and cycle_ticks:%u \n",
+			current_apbfreq(),n_usec, g_ticks);
+
+	gpio_config_sw_out(GPIO_PIN);
+
+	writel(TIMER0_BASE + TIMER0_STATUS_OFFSET, g_ticks);
+	writel(TIMER0_BASE + TIMER0_RELOAD_OFFSET, g_ticks);
+	writel(TIMER0_BASE + TIMER0_MATCH1_OFFSET, (g_ticks/2));
+	writel(TIMER0_BASE + TIMER0_MATCH2_OFFSET, 0);
+	time_ctrl = readl(TIMER0_BASE + TIMER_CTRL_OFFSET);
+	time_ctrl = 0x1;
+	writel(TIMER0_BASE + TIMER_CTRL_OFFSET, time_ctrl);
+}
+#endif
