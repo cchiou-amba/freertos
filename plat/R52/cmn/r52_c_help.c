@@ -109,10 +109,10 @@ static void gic_dist_init(void)
 	/* set priority, default 0xa0 higher than cpu priority
 	 * 0xf8 [7:3]_0_0_0, 5bits to define priority
 	 * must be compatilbe with cpu interface settings
-	 * let's use 0x80808080 < 0xF8F8F8F8
+	 * let's use 0xa0a0a0a0 < 0xF8F8F8F8
 	*/
 	for (i = 32; i < irq_nr; i += 4)
-		writel(dist_base + GICD_IPRIORITYR0 + i, 0x80808080);
+		writel(dist_base + GICD_IPRIORITYR0 + i, 0xa0a0a0a0);
 
 	/* disable all spi */
 	for (i = 32; i < irq_nr; i += 32)
@@ -148,7 +148,7 @@ static void gic_redist_init(void)
 
 	/* Set priority for PPI and SGI interrupts */
 	for (i = 0; i < 32; i += 4)
-		writel(redist_base + GICD_IPRIORITYR0 + i, 0x80808080);
+		writel(redist_base + GICD_IPRIORITYR0 + i, 0xa0a0a0a0);
 }
 
 static void gic_percpu_init(void)

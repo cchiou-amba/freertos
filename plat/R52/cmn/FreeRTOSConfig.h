@@ -92,13 +92,13 @@
 
 
 /* as portPRIORITY_SHIFT = 3, MSB-5bits to define gic interrupt priority
- * so we can get 32 interrupt pri level and the GIC_CPU use the 0x80: (16 << 3)
- * configMAX_API_CALL_INTERRUPT_PRIORITY can use 0xa0: (20 << 3)
- * must compatible with the GIC settings
+ * so we can get 32 interrupt pri level and the GIC_CPU use the 0xa0: (20 << 3)
+ * configMAX_API_CALL_INTERRUPT_PRIORITY can use 0x90: (18 << 3)
+ * must compatible with the GIC settings, ISR call xxxFromIsr priority >= cpu interface
 */
 #define configUNIQUE_INTERRUPT_PRIORITIES	32
 #define configKERNEL_INTERRUPT_PRIORITY		(255)	/* alway set 0xFF */
-#define configMAX_API_CALL_INTERRUPT_PRIORITY	20	/* gic prirotiy: 0xa0 */
+#define configMAX_API_CALL_INTERRUPT_PRIORITY	18	/* gic prirotiy */
 #define configMAX_SYSCALL_INTERRUPT_PRIORITY	configMAX_API_CALL_INTERRUPT_PRIORITY
 
 #ifndef __ASM__
