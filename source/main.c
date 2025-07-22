@@ -73,3 +73,24 @@ int main(void)
 
 	return 0;
 }
+
+/*
+ * This is the kernel provided implementation of vApplicationGetTimerTaskMemory()
+ * to provide the memory that is used by the Timer service task. It is used when
+ * configKERNEL_PROVIDED_STATIC_MEMORY is set to 1. The application can provide
+ * it's own implementation of vApplicationGetTimerTaskMemory by setting
+ * configKERNEL_PROVIDED_STATIC_MEMORY to 0 or leaving it undefined.
+ */
+#if (configUSE_TIMERS == 1)
+void vApplicationGetTimerTaskMemory(StaticTask_t **ppxTimerTaskTCBBuffer,
+                    StackType_t **ppxTimerTaskStackBuffer,
+                    uint32_t *pulTimerTaskStackSize)
+{
+    static StaticTask_t xTimerTaskTCB;
+    static StackType_t uxTimerTaskStack[ configTIMER_TASK_STACK_DEPTH ];
+
+    *ppxTimerTaskTCBBuffer = &( xTimerTaskTCB );
+    *ppxTimerTaskStackBuffer = &( uxTimerTaskStack[ 0 ] );
+    *pulTimerTaskStackSize = configTIMER_TASK_STACK_DEPTH;
+}
+#endif

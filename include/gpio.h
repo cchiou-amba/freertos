@@ -81,5 +81,8 @@ extern int gpio_config_hw(int gpio, int alt_func);
 extern int gpio_pin_mode(int gpio, int alt_func);
 extern int gpio_pin_interrupt(int gpio, int irqmode);
 extern int gpio_pin_interrupt_clear(int gpio);
+extern int gpio_s_dir(int gpio, int dir_out);
+extern int gpio_g_dir(int gpio);
+extern uint32_t gpio_max_line(void);
 
 #endif

@@ -50,26 +50,17 @@
 #define AHB_UART6_BASE		(INVLIAD_ADDRESS + 2)
 #define MAX_VALID_AHB_UART_PORT	5
 /**********************************************************/
-#define IOMUX_BASE		0xE4010000
-#define GPIO0_BASE		0xE4013000
-#define GPIO1_BASE		0xE4014000
-#define GPIO2_BASE		0xE4015000
-#define GPIO3_BASE		0xE4016000
-#define GPIO4_BASE		(INVLIAD_ADDRESS + 0)
-#define GPIO5_BASE		(INVLIAD_ADDRESS + 1)
-#define GPIO6_BASE		(INVLIAD_ADDRESS + 2)
-#define GPIO7_BASE		(INVLIAD_ADDRESS + 3)
-#define GPIO8_BASE		(INVLIAD_ADDRESS + 4)
-#define GPIO9_BASE		(INVLIAD_ADDRESS + 5)
-#define GPIO10_BASE		(INVLIAD_ADDRESS + 6)
-
-#define GPIO_INSTANCES		4
+#define GPIO0_BASE		0xFFF03000
+#define GPIO1_BASE		(INVLIAD_ADDRESS + 0)
+#define GPIO2_BASE		(INVLIAD_ADDRESS + 1)
+#define GPIO3_BASE		(INVLIAD_ADDRESS + 2)
 /**********************************************************/
 #define WDT0_BASE		0xFFF01000
 #define WDT1_BASE		INVLIAD_ADDRESS
 #define WDTC0_REG(x)		(WDT0_BASE + (x))
 #define WDTC1_REG(x)		(WDT1_BASE + (x))
 /**********************************************************/
+#define IDC_INSTANCES	(3U)
 #define IDCS_BASE		INVLIAD_ADDRESS
 #define IDC0_BASE		0xFFF04000
 #define IDC1_BASE		0xFFF05000
@@ -113,7 +104,8 @@
 #define EL2_AHBFREQ_REG		(68) /* el2 offset 68 bytes just after el2_vector table */
 #define EL1_AHBFREQ_REG		(32) /* el1 offset 32 bytes just after el1_vector table */
 /**********************************************************/
-
+#define CFG_SAFETY_EN_REG   (0xFFF17068U)
+/**********************************************************/
 #ifndef __ASM__
 #include <stdint.h>
 #include <hwio.h>

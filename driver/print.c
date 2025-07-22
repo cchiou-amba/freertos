@@ -27,12 +27,15 @@
  ******************************************************************************/
 
 #include <common.h>
+#include <FreeRTOS.h>
+#include <task.h>
 
 #define PAD_RIGHT	1
 #define PAD_ZERO	2
 #define PRINT_BUF_LEN	64
 
 extern void console_putchar(char c);
+extern uint32_t ulPortInterruptNesting;
 
 static void printchar(char **str, int c)
 {
@@ -190,9 +193,23 @@ static int print( char **out, const char *format, va_list args )
 int printf(const char *format, ...)
 {
 	va_list args;
+	int ret;
+	uint32_t uxSavedInterruptStatus = pdFALSE;
+
+	if (ulPortInterruptNesting > 0)
+		uxSavedInterruptStatus = taskENTER_CRITICAL_FROM_ISR();
+	else
+		taskENTER_CRITICAL();
 
 	va_start( args, format );
-	return print( 0, format, args );
+	ret =  print( 0, format, args );
+
+	if (ulPortInterruptNesting > 0)
+		taskEXIT_CRITICAL_FROM_ISR(uxSavedInterruptStatus);
+	else
+		taskEXIT_CRITICAL();
+
+	return ret;
 }
 
 int sprintf(char *out, const char *format, ...)

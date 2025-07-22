@@ -51,7 +51,7 @@
 .global gic_cpu_get_iar1		/* ICC_IAR1: group1 interrupt acknowledge */
 .global gic_cpu_get_ctrl		/* ICC_CTLR: interrupt control */
 .global gic_distr_cbar			/* IMP_CBAR: gic distribute base address */
-
+.global gic_cpu_get_runpri
 /*---------------------------------------------------------------------------*/
 .global DSB
 .global DMB

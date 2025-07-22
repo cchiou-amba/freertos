@@ -44,6 +44,9 @@
 #define PHYS_TIMER_IRQ30		PPI_INT_VEC(30)
 #define GIC_TOTAL_IRQ_VECTORS		(1024)
 
+#define IDC0_IRQ		SPI_INT_VEC(567)
+#define IDC1_IRQ		SPI_INT_VEC(578)
+#define IDC2_IRQ		SPI_INT_VEC(572)
 /* GIC distribute from IMP_CBAR */
 #define GIC_REDIST_BASE			0x100000 /* redistribute offset */
 #define GIC_REDIST_WKUP			0x100014 /* redistribute wakeup offset */
@@ -179,5 +182,6 @@ typedef struct irq_manager_s
 	irq_handler_t handler;
 } irq_manager_t;
 
+extern int request_irq(uint32_t irq, uint32_t level, irq_handler_t handler, void *data, const char *name);
 #endif
 #endif

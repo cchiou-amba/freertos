@@ -19,6 +19,7 @@
 
 #define REF_CLK_FREQ		24000000 /* 24MHz, used by PLL */
 
+extern int sprintf(char *out, const char *format, ...);
 extern int printf(const char *format, ...);
 
 #define pr_err(format...)						\

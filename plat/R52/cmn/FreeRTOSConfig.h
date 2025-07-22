@@ -54,7 +54,7 @@
 #define configUSE_COUNTING_SEMAPHORES		1
 #define configMAX_TASK_NAME_LEN			(16)
 
-#if 0
+#if 1
 #define configUSE_TICK_HOOK			0
 #define configNUM_TX_DESCRIPTORS		15
 #define configSTREAM_BUFFER_TRIGGER_LEVEL_TEST_MARGIN	2
@@ -78,6 +78,7 @@
 #if (configUSE_TIMERS == 1)
 #define INCLUDE_xTimerGetTimerDaemonTaskHandle	1
 #define INCLUDE_xTimerPendFunctionCall		1
+#define INCLUDE_xTimerPendFunctionCallFromISR	1
 #endif
 #define INCLUDE_xTaskGetIdleTaskHandle		1
 #define INCLUDE_xTaskGetHandle			1
@@ -103,7 +104,13 @@
 
 #ifndef __ASM__
 #include <common.h>
-#define configASSERT(x)	 do { if (!(x)) { printf("Error: %s(%d): \n", __func__, __LINE__); } } while (0)
+#define configASSERT(x)	 do { \
+	if (!(x)) {  \
+		printf("Error: %s(%d): \n", __func__, __LINE__); \
+		portDISABLE_INTERRUPTS(); \
+		for(;;); \
+	} \
+} while (0)
 #endif
 
 #endif /* FREERTOS_CONFIG_H */

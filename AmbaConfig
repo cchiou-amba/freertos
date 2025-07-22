@@ -24,42 +24,37 @@
 ## POSSIBILITY OF SUCH DAMAGE.
 ##
 
-menu "FreeRTOS Configuration"
-
 config CONFIG_BOOT_FREERTOS
-	bool "Config FreeRTOS Boot"
+	bool "Boot FreeRTOS"
 	depends on CONFIG_CHIP_CV72 || CONFIG_CHIP_CV3AD685 || \
 		CONFIG_CHIP_CV75 || CONFIG_CHIP_N1_655
 	default n
 
-if CONFIG_BOOT_FREERTOS
-
+### M3
 menu "Cortex-M3"
+visible if CONFIG_BOOT_FREERTOS
 
 config CONFIG_BOOT_CM3
-	bool "Enable Cortex-M3 Boot"
+	bool "Boot Cortex-M3"
 	depends on CONFIG_CHIP_CV72 || CONFIG_CHIP_CV3AD685 || \
 		CONFIG_CHIP_CV75 || CONFIG_CHIP_N1_655
 	default n
 
-if CONFIG_BOOT_CM3
-
-menu "Cortex-M3 Features"
+menu "Features"
+visible if CONFIG_BOOT_CM3
 
 config CONFIG_CM3_LOG_CONSOLE
 	bool "Enable Log Console"
 	default n
 
-if CONFIG_CM3_LOG_CONSOLE
 config CONFIG_CM3_CMVI_LOG_CONSOLE
 	bool "Enable CMVI Log Console"
-	depends on CONFIG_CHIP_CV75
+	depends on CONFIG_CM3_LOG_CONSOLE && CONFIG_CHIP_CV75
 
 config CONFIG_CM3_UART_LOG_CONSOLE
 	int "UART Log Console Number"
-	depends on !CONFIG_CM3_CMVI_LOG_CONSOLE
+	depends on CONFIG_CM3_LOG_CONSOLE && !CONFIG_CM3_CMVI_LOG_CONSOLE
 	default 1
-endif  # CONFIG_CM3_LOG_CONSOLE
 
 config CONFIG_CM3_SPI
 	bool "Enable SPI Driver"
@@ -81,40 +76,36 @@ menuconfig CONFIG_CM3_RPMSG
 	bool "Enable RPMsg Driver"
 	default n
 
-if CONFIG_CM3_RPMSG
 config CONFIG_CM3_REMAP_ADDRESS
 	hex "Shared Memory Address"
 	default 0x0
+	depends on CONFIG_CM3_RPMSG
 
 config CONFIG_CM3_REMAP_SIZE
 	hex "Shared Memory Size"
 	default 0x0
-endif  # CONFIG_CM3_RPMSG
-endmenu  # Cortex-M3 Features
-endif  # CONFIG_BOOT_CM3
+	depends on CONFIG_CM3_RPMSG
+endmenu  # Features
 endmenu  # Cortex-M3
 
-if CONFIG_CHIP_N1_655 || CONFIG_CHIP_CV3AD685
-
 menu "Cortex-R52"
+visible if CONFIG_BOOT_FREERTOS && (CONFIG_CHIP_N1_655 || CONFIG_CHIP_CV3AD685)
 
 config CONFIG_BOOT_R52
-	bool "Enable Cortex-R52 Boot"
+	bool "Boot Cortex-R52"
 	default n
 
-if CONFIG_BOOT_R52
-
-menu "Cortex-R52 Features"
+menu "Features"
+visible if CONFIG_BOOT_R52
 
 config CONFIG_R52_LOG_CONSOLE
 	bool "Enable Log Console"
 	default n
 
-if CONFIG_R52_LOG_CONSOLE
 config CONFIG_R52_UART_LOG_CONSOLE
 	int "UART Log Console Number"
 	default 0
-endif  # CONFIG_R52_LOG_CONSOLE
+	depends on CONFIG_R52_LOG_CONSOLE
 
 config CONFIG_R52_SPI
 	bool "Enable SPI Driver"
@@ -124,20 +115,19 @@ menuconfig CONFIG_R52_RPMSG
 	bool "Enable RPMsg Driver"
 	default n
 
-if CONFIG_R52_RPMSG
 config CONFIG_R52_REMAP_ADDRESS
 	hex "Shared Memory Address"
 	default 0x0
+	depends on CONFIG_R52_RPMSG
 
 config CONFIG_R52_REMAP_SIZE
 	hex "Shared Memory Size"
 	default 0x0
+	depends on CONFIG_R52_RPMSG
 
-endif  # CONFIG_R52_RPMSG
-endmenu  # Cortex-R52 Features
-endif  # CONFIG_BOOT_R52
+config CONFIG_VIRTIO_SHMEM_START
+	hex "Physical memory start reserved for VIRTIO(size is 2MiB)"
+	default 0x02000000
+
+endmenu  # Features
 endmenu  # Cortex-R52
-endif  # CONFIG_CHIP_N1_655 || CONFIG_CHIP_CV3AD685
-endif  # CONFIG_BOOT_FREERTOS
-endmenu  # FreeRTOS Configuration
-

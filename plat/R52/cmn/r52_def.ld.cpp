@@ -37,8 +37,7 @@ MEMORY
 {
 	DRAM (rwx)  : ORIGIN = RTOS_BOOT_ADDR, LENGTH = 64K		/* DDR memory */
 	ATCM (rwx)  : ORIGIN = 0xf6000000, LENGTH = 64K		/* ATCM memory code & data */
-	BTCM (rw)   : ORIGIN = 0xf6010000, LENGTH = 32K		/* BTCM memory stack */
-	CTCM (rw)   : ORIGIN = 0xf6018000, LENGTH = 32K		/* CTCM memory T.B.D usage */
+	BTCM (rw)   : ORIGIN = 0xf6010000, LENGTH = 64K		/* BTCM and CTCM for stack and bss */
 }
 
 SECTIONS

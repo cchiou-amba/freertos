@@ -64,7 +64,11 @@ MCU_CMN_FLAGS	:= \
 	-fno-asynchronous-unwind-tables \
 	-DCONFIG_CHIP_$(CHIP_UPPER_CASE) \
 	-DCONFIG_BOOT_$(ARCH) \
-	-DRTOS_BOOT_ADDR=$(BOOT_ADDR)
+	-DRTOS_BOOT_ADDR=$(BOOT_ADDR) \
+
+ifneq ($(VIRTIO_SHMEM_START),)
+MCU_CMN_FLAGS += -DVIRTIO_SHMEM_START=$(VIRTIO_SHMEM_START)
+endif
 
 # Architecture-specific flags
 ifeq ($(ARCH),CM3)
@@ -136,10 +140,17 @@ MCU_FILES	+= \
 	driver/console/console.c \
 	driver/wdt.c \
 	driver/delay.c \
-	driver/gpio.c \
 	driver/idc.c \
 	driver/rct.c \
 	driver/cmvi_pwr.c
+
+CM3_SOURCE := driver/gpio.c
+
+R52_SOURCE := virtio/virtio_mmio.c \
+	      virtio/gpio_virtio.c \
+	      virtio/i2c_virtio.c \
+	      driver/r52/gpio.c \
+	      driver/r52/i2c.c \
 
 # Include paths
 MCU_INCLUDES	:= \
@@ -199,6 +210,8 @@ MCU_CFLAGS	+= -DCONFIG_$(ARCH)_RPMSG \
 MCU_INCLUDES	+= $(RPMSG_LITE_INCS)
 MCU_FILES	+= $(RPMSG_LITE_FILES) driver/rpmsg.c
 endif
+
+MCU_FILES	+= $($(ARCH)_SOURCE)
 
 # Image header Marker 8 bytes len: 0x03 or 0x52
 MCU_MARKER	:= $(MCU_OUTPUT)/$(ARCH)_HDR.marker
