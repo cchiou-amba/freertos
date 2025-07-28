@@ -873,3 +873,6 @@ void vApplicationGetTimerTaskMemory(StaticTask_t **ppxTimerTaskTCBBuffer,
 	 * configMINIMAL_STACK_SIZE is specified in words, not bytes. */
 	*pulTimerTaskStackSize = configTIMER_TASK_STACK_DEPTH;
 }
+
+/* CM3 doesn't use the ulPortInterruptNesting for interrupt nest, No interrupt Nest On CM3 */
+volatile uint32_t ulPortInterruptNesting = 0;
