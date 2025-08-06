@@ -165,7 +165,6 @@ void cmvi_por_pi_prepare(void)
 	data = readl(CM3_SCRATCHPAD_REG(CM3_PI_POR_OFFSET));
 	data &= ~PI_POR_MASK;
 	writel(CM3_SCRATCHPAD_REG(CM3_PI_POR_OFFSET), data);
-
 #if 0
 	/* switch to use internal OSC clock(not accurate) */
 	vPortSetupTimerInterruptDynamic(CMVI_PI_OFF_CM3FREQ);
@@ -209,6 +208,7 @@ void cmvi_powerseq_ops(int32_t on, int32_t srs)
 {
 	uint32_t data = 0;
 
+#define CMVI_DELAY_LOOPS	(20000)	/* gap about 28ms, like CMVI-cold boot */
 	if (on) {
 		data = readl(CM3_SCRATCHPAD_REG(CM3_PWR_SEQ_OFFSET));
 		data &= ~(PWR_SEQ1_MASK | PWR_SEQ3_MASK);
@@ -217,9 +217,11 @@ void cmvi_powerseq_ops(int32_t on, int32_t srs)
 		}
 		data |= PWR_SEQ1_MASK; 		/* PSEQ1 = 1 */
 		writel(CM3_SCRATCHPAD_REG(CM3_PWR_SEQ_OFFSET), data);
+		cmvi_delay(CMVI_DELAY_LOOPS);
 		if (!srs) {
 			data |= PWR_SEQ2_MASK; /* PSEQ2 = 1; EVK->PSEQ3->DDR */
 			writel(CM3_SCRATCHPAD_REG(CM3_PWR_SEQ_OFFSET), data);
+			cmvi_delay(CMVI_DELAY_LOOPS);
 		}
 		data |= PWR_SEQ3_MASK; 		/* PSEQ3 = 1 */
 		writel(CM3_SCRATCHPAD_REG(CM3_PWR_SEQ_OFFSET), data);
@@ -227,13 +229,16 @@ void cmvi_powerseq_ops(int32_t on, int32_t srs)
 		data = readl(CM3_SCRATCHPAD_REG(CM3_PWR_SEQ_OFFSET));
 		data &= ~PWR_SEQ3_MASK; 	/* PSEQ3=0 */
 		writel(CM3_SCRATCHPAD_REG(CM3_PWR_SEQ_OFFSET), data);
+		cmvi_delay(CMVI_DELAY_LOOPS);
 		if (!srs) {
 			data &= ~PWR_SEQ2_MASK;	/* PSEQ2=0; EVK->PSEQ3->DDR */
 			writel(CM3_SCRATCHPAD_REG(CM3_PWR_SEQ_OFFSET), data);
+			cmvi_delay(CMVI_DELAY_LOOPS);
 		}
 		data &= ~PWR_SEQ1_MASK;		/* PSEQ1=0 */
 		writel(CM3_SCRATCHPAD_REG(CM3_PWR_SEQ_OFFSET), data);
 	}
+	cmvi_delay(CMVI_DELAY_LOOPS);
 }
 
 /*  or wakeup the dedicated thread to
@@ -347,6 +352,7 @@ void wdt1_pi_intr(void)
 void pi_ext_por_deassert(void)
 {
 	/* must handle it as soon as possible, POC sample issue */
+	srs_pwrctrl = 0;
 	cmvi_por_pi_prepare();
 	cmvi_por_pi_unprepare();
 	printf("CMVI: POR deassert !\n");
