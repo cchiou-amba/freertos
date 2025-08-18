@@ -204,7 +204,7 @@ void cmvi_por_pi_unprepare(void)
 	cmvi_delay(40);
 }
 
-void cmvi_powerseq_ops(int32_t on, int32_t srs)
+void __attribute__((weak)) cmvi_powerseq_ops(int32_t on, int32_t srs)
 {
 	uint32_t data = 0;
 
