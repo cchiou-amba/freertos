@@ -501,6 +501,27 @@ static inline uint32_t current_cpuid(void)
 	return cpuid;
 }
 
+static inline uint32_t irq_disable_save(void) {
+	uint32_t primask;
+	__asm__ __volatile__ (
+		"mrs %0, primask\n\t"
+		"cpsid i\n\t"
+		"dsb \n\t"
+		"isb \n\t"
+		: "=r" (primask) :: "memory"
+	);
+	return primask;
+}
+
+static inline void irq_enable_restore(uint32_t primask) {
+	__asm__ __volatile__ (
+		"msr primask, %0\n\t"
+		"dsb \n\t"
+		"isb \n\t"
+		:: "r" (primask) : "memory"
+	);
+}
+
 #endif
 
 #endif

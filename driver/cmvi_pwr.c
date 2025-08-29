@@ -124,6 +124,16 @@ void __attribute__((weak))  board_cmvi_poweroff_custom_post(void)
 {
 }
 
+uint32_t cmvi_enter_critical(void)
+{
+	return irq_disable_save();
+}
+
+void cmvi_exit_critical(uint32_t flag)
+{
+	return irq_enable_restore(flag);
+}
+
 void cmvi_cm3_mark_bootdone(void)
 {
 	/*
@@ -144,12 +154,17 @@ void cmvi_delay(volatile uint32_t loops)
 void cmvi_por_pi_prepare(void)
 {
 	/* get some lock and make sure other thread no accessing PI anymore*/
-	uint32_t data;
+	uint32_t data, flags;
+
+	flags = cmvi_enter_critical();
 
 	/* step1: set isolation_sw-reset */
 	data = readl(CM3_SCRATCHPAD_REG(CM3_PWR_GATE_OFFSET));
 	data |= PWR_GATE_ISOLATE_SW_RST_MASK;
 	writel(CM3_SCRATCHPAD_REG(CM3_PWR_GATE_OFFSET), data);
+
+	/* must wait some cycles */
+	cmvi_delay(10);
 
 	/* step2: set isolate_en */
 	data |= PWR_GATE_ISOLATE_EN_MASK;
@@ -165,15 +180,19 @@ void cmvi_por_pi_prepare(void)
 	data = readl(CM3_SCRATCHPAD_REG(CM3_PI_POR_OFFSET));
 	data &= ~PI_POR_MASK;
 	writel(CM3_SCRATCHPAD_REG(CM3_PI_POR_OFFSET), data);
+
 #if 0
 	/* switch to use internal OSC clock(not accurate) */
 	vPortSetupTimerInterruptDynamic(CMVI_PI_OFF_CM3FREQ);
 #endif
+	cmvi_exit_critical(flags);
 }
 
 void cmvi_por_pi_unprepare(void)
 {
-	uint32_t data;
+	uint32_t data,flags;
+
+	flags = cmvi_enter_critical();
 
 	/* step1: check pi_por_L_monitor=H then Next */
 	do {
@@ -194,14 +213,19 @@ void cmvi_por_pi_unprepare(void)
 	data = readl(CM3_SCRATCHPAD_REG(CM3_PWR_GATE_OFFSET));
 	data &= ~(PWR_GATE_SHUTDOWN_PI_MASK | PWR_GATE_ISOLATE_EN_MASK);
 	writel(CM3_SCRATCHPAD_REG(CM3_PWR_GATE_OFFSET), data);
-	data &= ~PWR_GATE_ISOLATE_SW_RST_MASK; /* clean isolation_sw-reset */
+
+	/* must wait some cycles */
+	cmvi_delay(10);
+
+	/* clear isolation_sw_reset */
+	data &= ~PWR_GATE_ISOLATE_SW_RST_MASK;
 	writel(CM3_SCRATCHPAD_REG(CM3_PWR_GATE_OFFSET), data);
 
 #if 0
 	/* restore cpufreq */
 	vPortSetupTimerInterruptDynamic(current_cpufreq());
 #endif
-	cmvi_delay(40);
+	cmvi_exit_critical(flags);
 }
 
 void __attribute__((weak)) cmvi_powerseq_ops(int32_t on, int32_t srs)

@@ -154,5 +154,6 @@ extern void cmvi_por_pi_unprepare(void);
 extern void cmvi_powerseq_ops(int32_t on, int32_t srs);
 extern void cmvi_cm3_mark_bootdone(void);
 extern void cmvi_isr_event_setbits(uint32_t bitmask);
-
+extern uint32_t cmvi_enter_critical(void);
+extern void cmvi_exit_critical(uint32_t flag);
 #endif
