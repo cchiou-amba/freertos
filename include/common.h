@@ -19,6 +19,23 @@
 
 #define REF_CLK_FREQ		24000000 /* 24MHz, used by PLL */
 
+#if defined(ARCH_CM3)
+static inline int in_interrupt(void)
+{
+	return ((portNVIC_INT_CTRL_REG & 0xFF) != 0);
+}
+#elif defined(ARCH_R52)
+static inline int in_interrupt(void)
+{
+    unsigned int mode;
+    __asm volatile ("mrs %0, cpsr" : "=r"(mode));
+    mode &= 0x1F;
+    return (mode == 0x11 || mode == 0x12);
+}
+#else
+#define in_interrupt()	(0)
+#endif
+
 extern int sprintf(char *out, const char *format, ...);
 extern int printf(const char *format, ...);
 

@@ -193,10 +193,10 @@ static int print( char **out, const char *format, va_list args )
 int printf(const char *format, ...)
 {
 	va_list args;
-	int ret;
+	int ret, in_isr = in_interrupt();
 	uint32_t uxSavedInterruptStatus = pdFALSE;
 
-	if (ulPortInterruptNesting > 0)
+	if (in_isr)
 		uxSavedInterruptStatus = taskENTER_CRITICAL_FROM_ISR();
 	else
 		taskENTER_CRITICAL();
@@ -204,7 +204,7 @@ int printf(const char *format, ...)
 	va_start( args, format );
 	ret =  print( 0, format, args );
 
-	if (ulPortInterruptNesting > 0)
+	if (in_isr)
 		taskEXIT_CRITICAL_FROM_ISR(uxSavedInterruptStatus);
 	else
 		taskEXIT_CRITICAL();
