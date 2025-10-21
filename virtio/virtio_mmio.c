@@ -311,7 +311,7 @@ int virtio_mmio_device_register(struct virtio_mmio_device *dev)
 	mmio->vendor_id = dev->vendor_id;
 	mmio->queue_num_max = 16;
 	mmio->queue_notify = 0;
-	mmio->host_features = 1 << (VIRTIO_F_ACCESS_PLATFORM % 32);		/* Ask Linux Using DMA */
+	mmio->host_features = 1 << (VIRTIO_F_ACCESS_PLATFORM % 32) | dev->features;		/* Ask Linux Using DMA */
 
 	if (dev->config_ptr) {
 		memcpy((void *)dev->base + VIRTIO_MMIO_CONFIG, dev->config_ptr, dev->config_size);

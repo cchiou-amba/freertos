@@ -59,6 +59,7 @@ struct virtio_mmio_device {
 	void *config_ptr;
 	uint32_t config_size;
 	void *binding;
+	uint32_t features;
 };
 
 int virtio_mmio_device_register(struct virtio_mmio_device *dev);

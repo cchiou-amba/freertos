@@ -40,6 +40,9 @@
 #define VIRTIO_I2C_MSG_OK	0
 #define VIRTIO_I2C_MSG_ERR	1
 
+/* Linux 6.12 hints 'Zero-length request feature is mandatory' */
+#define VIRTIO_I2C_F_ZERO_LENGTH_REQUEST	0
+
 // #define DEBUG
 
 struct virtio_i2c_out_hdr {
@@ -152,6 +155,7 @@ static struct virtio_mmio_device i2c0_dev = {
 	.irq[VIRTIO_IRQ_DEVICE_TO_DRIVER] = 1,
 	.irq[VIRTIO_IRQ_DRIVER_TO_DEVICE] = VIRTIO_DEVICE_IRQ1,
 	.callback = i2c_virtio_cb,
+	.features =  1U << VIRTIO_I2C_F_ZERO_LENGTH_REQUEST,
 };
 #endif
 
@@ -164,6 +168,7 @@ static struct virtio_mmio_device i2c1_dev = {
 	.irq[VIRTIO_IRQ_DEVICE_TO_DRIVER] = 2,
 	.irq[VIRTIO_IRQ_DRIVER_TO_DEVICE] = VIRTIO_DEVICE_IRQ2,
 	.callback = i2c_virtio_cb,
+	.features =  1U << VIRTIO_I2C_F_ZERO_LENGTH_REQUEST,
 };
 #endif
 
@@ -176,6 +181,7 @@ static struct virtio_mmio_device i2c2_dev = {
 	.irq[VIRTIO_IRQ_DEVICE_TO_DRIVER] = 3,
 	.irq[VIRTIO_IRQ_DRIVER_TO_DEVICE] = VIRTIO_DEVICE_IRQ3,
 	.callback = i2c_virtio_cb,
+	.features =  1U << VIRTIO_I2C_F_ZERO_LENGTH_REQUEST,
 };
 #endif
 
