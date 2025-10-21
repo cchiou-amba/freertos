@@ -31,7 +31,7 @@
 #include <plat.h>
 #include "virtio.h"
 
-// #define DEBUG
+//#define DEBUG
 
 #define VIRTIO_F_ACCESS_PLATFORM	33
 
@@ -234,9 +234,9 @@ static void mmio_listen(struct virtio_mmio_device *dev, struct vring *vr)
 
 		used_idx = vr->used->idx;
 		avail_idx = vr->avail->idx;
+
 		if (used_idx > avail_idx) {
-			pr_err("protocol error: (%u > %u)\n", used_idx, avail_idx);
-			break;
+			avail_idx += 0x10000;	// fix u16 overflow
 		}
 
 		desc_idx = vr->avail->ring[used_idx % vr->num] % vr->num;
