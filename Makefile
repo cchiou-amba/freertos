@@ -230,7 +230,7 @@ $(TARGET_BIN):$(TARGET_ELF)
 $(TARGET_HDR_BIN):$(TARGET_BIN) $(MCU_MARKER)
 	@cat $(MCU_MARKER) $(TARGET_BIN) > $@
 
-$(TARGET_ELF): $(MCU_OBJS) $(MCU_LINKER)
+$(TARGET_ELF): $(MCU_OBJS) $(MCU_LINKER) $(DOT_CONFIG)
 	@echo "Linking $(TARGET)..."
 	@$(MCU_CC) -Wl,--start-group $(MCU_OBJS) -Wl,--end-group $(MCU_LDFLAGS) -o $@
 	@$(MCU_NM) -n $@ | grep -v '\( [aUw] \)|\(__crc__\)' > $(subst .elf,.map,$@)
@@ -258,6 +258,9 @@ $(MCU_OUTPUT)/R52_HDR.marker:
 	@mkdir -p $(dir $@)
 	@/bin/bash -c "printf '\x52%.0s' {1..8} > $@"
 
+
+# Make all object files depend on the config file
+$(MCU_OBJS): $(DOT_CONFIG)
 
 # Compilation rules
 $(MCU_OUTPUT)/%.o: %.c
