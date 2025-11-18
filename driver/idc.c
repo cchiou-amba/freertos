@@ -45,7 +45,10 @@ void idc_clk_config(uint8_t idc_id, uint32_t idc_rate)
 	if (!idc_rate)
 		return;
 
-	clksrc = current_cpufreq() / 2;
+	if (idc_id == I2C_CMVI)
+		clksrc = current_cpufreq() / 2;
+	else
+		clksrc = current_apbfreq();
 	duty_cycle = idc_readl(idc_id, IDC_DUTYCYCLE_OFFSET);
 
 	idc_prescale =((clksrc / idc_rate)  - 2) / (4 + duty_cycle);
