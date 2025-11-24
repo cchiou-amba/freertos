@@ -148,7 +148,7 @@ static int i2c_virtio_cb(void *binding, struct virtio_pkt *pkt, uint32_t num)
 
 #if defined(I2C0_VIRTIO)
 static struct virtio_mmio_device i2c0_dev = {
-	.name = "i2c-virtio",
+	.name = "i2c0-virtio",
 	.base = VIRTIO_BASE(VIRTIO_ID_I2C_ADAPTER, 0),
 	.device_id = VIRTIO_ID_I2C_ADAPTER,
 	.vendor_id = 0xffffffff,
@@ -161,7 +161,7 @@ static struct virtio_mmio_device i2c0_dev = {
 
 #if defined(I2C1_VIRTIO)
 static struct virtio_mmio_device i2c1_dev = {
-	.name = "i2c-virtio",
+	.name = "i2c1-virtio",
 	.base = VIRTIO_BASE(VIRTIO_ID_I2C_ADAPTER, 1),
 	.device_id = VIRTIO_ID_I2C_ADAPTER,
 	.vendor_id = 0xffffffff,
@@ -174,7 +174,7 @@ static struct virtio_mmio_device i2c1_dev = {
 
 #if defined(I2C2_VIRTIO)
 static struct virtio_mmio_device i2c2_dev = {
-	.name = "i2c-virtio",
+	.name = "i2c2-virtio",
 	.base = VIRTIO_BASE(VIRTIO_ID_I2C_ADAPTER, 2),
 	.device_id = VIRTIO_ID_I2C_ADAPTER,
 	.vendor_id = 0xffffffff,
