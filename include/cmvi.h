@@ -156,4 +156,10 @@ extern void cmvi_cm3_mark_bootdone(void);
 extern void cmvi_isr_event_setbits(uint32_t bitmask);
 extern uint32_t cmvi_enter_critical(void);
 extern void cmvi_exit_critical(uint32_t flag);
+
+static inline uint32_t cmvi_spi_clkrate(void)
+{
+	return current_cpufreq() /
+		(readl(CM3_SCRATCHPAD_REG(CM3_CMVI_SPI_CLKDIV_OFFSET)) & 0x00FFFFFF);
+}
 #endif
