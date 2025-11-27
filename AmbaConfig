@@ -107,10 +107,6 @@ config CONFIG_R52_UART_LOG_CONSOLE
 	default 0
 	depends on CONFIG_R52_LOG_CONSOLE
 
-config CONFIG_R52_SPI
-	bool "Enable SPI Driver"
-	default n
-
 menuconfig CONFIG_R52_RPMSG
 	bool "Enable RPMsg Driver"
 	default n

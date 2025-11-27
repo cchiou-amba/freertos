@@ -32,9 +32,6 @@
 
 #include "virtio_id.h"
 
-#define I2C0_VIRTIO	1
-#define I2C1_VIRTIO	1
-#define I2C2_VIRTIO	1
 #define I2C_VIRTIO_NUM	3
 
 #define VIRTIO_I2C_MSG_OK	0
@@ -146,7 +143,7 @@ static int i2c_virtio_cb(void *binding, struct virtio_pkt *pkt, uint32_t num)
  * };
  */
 
-#if defined(I2C0_VIRTIO)
+
 static struct virtio_mmio_device i2c0_dev = {
 	.name = "i2c0-virtio",
 	.base = VIRTIO_BASE(VIRTIO_ID_I2C_ADAPTER, 0),
@@ -157,9 +154,7 @@ static struct virtio_mmio_device i2c0_dev = {
 	.callback = i2c_virtio_cb,
 	.features =  1U << VIRTIO_I2C_F_ZERO_LENGTH_REQUEST,
 };
-#endif
 
-#if defined(I2C1_VIRTIO)
 static struct virtio_mmio_device i2c1_dev = {
 	.name = "i2c1-virtio",
 	.base = VIRTIO_BASE(VIRTIO_ID_I2C_ADAPTER, 1),
@@ -170,9 +165,7 @@ static struct virtio_mmio_device i2c1_dev = {
 	.callback = i2c_virtio_cb,
 	.features =  1U << VIRTIO_I2C_F_ZERO_LENGTH_REQUEST,
 };
-#endif
 
-#if defined(I2C2_VIRTIO)
 static struct virtio_mmio_device i2c2_dev = {
 	.name = "i2c2-virtio",
 	.base = VIRTIO_BASE(VIRTIO_ID_I2C_ADAPTER, 2),
@@ -183,7 +176,6 @@ static struct virtio_mmio_device i2c2_dev = {
 	.callback = i2c_virtio_cb,
 	.features =  1U << VIRTIO_I2C_F_ZERO_LENGTH_REQUEST,
 };
-#endif
 
 static void virtio_i2c_task(void *arg)
 {
@@ -207,22 +199,16 @@ void virtio_i2c_init(int id)
 
 	switch(id) {
 	case 0:
-#if defined(I2C0_VIRTIO)
 		dev = &i2c0_dev;
 		i2c_bus = I2C0;
-#endif
 		break;
 	case 1:
-#if defined(I2C1_VIRTIO)
 		dev = &i2c1_dev;
 		i2c_bus = I2C1;
-#endif
 		break;
 	case 2:
-#if defined(I2C2_VIRTIO)
 		dev = &i2c2_dev;
 		i2c_bus = I2C2;
-#endif
 		break;
 	default:
 		break;
@@ -233,6 +219,14 @@ void virtio_i2c_init(int id)
 
 	dev->stack = stack[id];
 	dev->binding = i2c_get_bus_device(i2c_bus);
+
+	printf("mmio:\n");
+	printf("\tname: %s\n", dev->name);
+	printf("\tbase: 0x%08x\n", dev->base);
+	printf("\t irq: notify(%u), local(%u)\n",
+	       dev->irq[VIRTIO_IRQ_DEVICE_TO_DRIVER],
+	       dev->irq[VIRTIO_IRQ_DRIVER_TO_DEVICE]);
+
 	ret = xTaskCreateStatic(virtio_i2c_task, dev->name, VIRTIO_TASK_STACK_DEPTH,
 				dev, VIRTIO_TASK_PRIOR, dev->stack, &dev->tcb);
 	if (!ret) {

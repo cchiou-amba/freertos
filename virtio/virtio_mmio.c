@@ -292,13 +292,6 @@ int virtio_mmio_device_register(struct virtio_mmio_device *dev)
 		return -1;
 	}
 
-	printf("mmio:\n");
-	printf("\tname: %s\n", dev->name);
-	printf("\tbase: 0x%08x\n", dev->base);
-	printf("\t irq: notify(%u), local(%u)\n",
-	       dev->irq[VIRTIO_IRQ_DEVICE_TO_DRIVER],
-	       dev->irq[VIRTIO_IRQ_DRIVER_TO_DEVICE]);
-
 	memset(mmio, 0, sizeof(*mmio));
 
 	mmio->magic[0] = 'v';

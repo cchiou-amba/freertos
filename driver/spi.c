@@ -375,3 +375,4 @@ int spi_init(spi_t *spi)
 
 	return 0;
 }
+
