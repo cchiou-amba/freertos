@@ -236,6 +236,8 @@ void spi_isr(spi_t *spi)
 {
 	uint32_t isr = readl(spi->base + SPI_ISR_OFFSET);
 
+	readl(spi->base + SPI_ICR_OFFSET);
+
 	if (isr & SPI_TXEIS_MASK) {
 		spi->tx_isr(spi);
 	}
