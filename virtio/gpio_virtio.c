@@ -204,6 +204,12 @@ void virtio_gpio_init(void)
 	gpio_config.gpio_names_size = gpio_config.ngpio * (strlen(gpio_name) + 2 + 1);
 
 	dev->stack = stack;
+	printf("mmio:\n");
+	printf("\tname: %s\n", dev->name);
+	printf("\tbase: 0x%08x\n", dev->base);
+	printf("\t irq: notify(%u), local(%u)\n",
+	       dev->irq[VIRTIO_IRQ_DEVICE_TO_DRIVER],
+	       dev->irq[VIRTIO_IRQ_DRIVER_TO_DEVICE]);
 	ret = xTaskCreateStatic(virtio_gpio_task, dev->name, VIRTIO_TASK_STACK_DEPTH,
 				dev, VIRTIO_TASK_PRIOR, dev->stack,&dev->tcb);
 	if (!ret) {

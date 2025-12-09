@@ -37,7 +37,9 @@
  */
 #define SPI_IRQ_RAW_START		(480)
 #define INSTALLED_IRQ_VECTORS		(32 + 288)
-
+/**********************************************************/
+#define SI_CR52_CONFIG_BASE	(0xFFF17000)
+#define CG_SSI_SI_REG_OFFSET	(0x18)
 /**********************************************************/
 #define INVLIAD_ADDRESS		0xFFFFFFFF
 #define APB_UART_BASE		0xE4000000
@@ -89,6 +91,11 @@
 #define TIMER2_MATCH1_OFFSET	0x28
 #define TIMER2_MATCH2_OFFSET	0x2c
 #define TIMER_CTRL_OFFSET	0x30
+/**********************************************************/
+#define SPI_BASE		INVLIAD_ADDRESS
+#define SPI0_BASE		0xFFF08000
+#define SPI1_BASE		0xFFF0A000
+#define SPI2_BASE		(INVLIAD_ADDRESS + 0)
 /**********************************************************/
 #define PLL_R52_CTRL_REG	0xED080928
 #define PLL_R52_FRAC_REG	0xED08092C

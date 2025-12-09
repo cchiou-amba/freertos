@@ -294,7 +294,6 @@ static int i2c_recv_data(struct i2c_master *bus, uint8_t slave, struct i2c_msg *
 	return rval;
 }
 
-
 static void *get_i2c_bus(int chan)
 {
 	if (chan >= IDC_INSTANCES) {

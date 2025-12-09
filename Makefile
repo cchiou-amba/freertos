@@ -113,6 +113,10 @@ FREERTOS_FILES	:= \
 	FreeRTOS/stream_buffer.c \
 	FreeRTOS/portable/GCC/ARM_$(ARCH)/port.c
 
+ifeq ("$(CONFIG_BOOT_R52)","y")
+FREERTOS_FILES	+= FreeRTOS/portable/MemMang/heap_4.c
+endif
+
 # Add architecture-specific ASM files if they exist
 ifneq ($(wildcard FreeRTOS/portable/GCC/ARM_$(ARCH)/portASM.S),)
 FREERTOS_FILES	+= FreeRTOS/portable/GCC/ARM_$(ARCH)/portASM.S
@@ -151,6 +155,8 @@ R52_SOURCE := virtio/virtio_mmio.c \
 	      virtio/i2c_virtio.c \
 	      driver/r52/gpio.c \
 	      driver/r52/i2c.c \
+	      driver/r52/spi.c \
+	      virtio/spi_virtio.c \
 
 # Include paths
 MCU_INCLUDES	:= \
@@ -179,7 +185,7 @@ MCU_FILES	+= $(AMB_BOARD_DIR)/bsp/bsp_$(ARCH_LOWER_CASE).c
 endif
 
 # Optional SPI support
-ifeq ("$(CONFIG_$(ARCH)_SPI)","y")
+ifeq ("$(CONFIG_CM3_SPI)","y")
 MCU_CFLAGS	+= -DCONFIG_$(ARCH)_SPI
 MCU_FILES	+= driver/spi.c
 endif

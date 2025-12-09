@@ -47,6 +47,10 @@
 #define IDC0_IRQ		SPI_INT_VEC(567)
 #define IDC1_IRQ		SPI_INT_VEC(578)
 #define IDC2_IRQ		SPI_INT_VEC(572)
+
+#define SPI0_IRQ		SPI_INT_VEC(565)
+#define SPI1_IRQ		SPI_INT_VEC(566)
+
 /* GIC distribute from IMP_CBAR */
 #define GIC_REDIST_BASE			0x100000 /* redistribute offset */
 #define GIC_REDIST_WKUP			0x100014 /* redistribute wakeup offset */
