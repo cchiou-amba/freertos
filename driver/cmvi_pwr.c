@@ -311,10 +311,10 @@ static void cmvi_wkup_exit(void)
 
 static void cmvi_wkup_post(void)
 {
-	printf("CMVI:Wakeup Post! \n");
+	printf("CMVI:Wakeup Post!\n");
 	board_cmvi_wkup_custom_post();
 	if (suspend_state) {
-		vTaskDelay(10);	/* wait for SOC bootup(covery bst stage) */
+		vTaskDelay(100);		/* wait for SOC bootup(covery bst stage) */
 		board_cmvi_srsflag_clr();	/* this bit must clear or por will failed */
 		board_cmvi_enable_por();	/* now re-enable por */
 		board_cmvi_ddrrst_ctrl(1);	/* re-connect dram reset ctrl */
@@ -341,7 +341,7 @@ void cmvi_isr_event_setbits(uint32_t bitmask)
 /* ISR: wdt0 as warm reset */
 void wdt0_pi_intr(void)
 {
-	printf("CMVI: PI_WDT0!\r\n");
+	printf("CMVI: PI_WDT0!\n");
 	cmvi_warm_reset_pi(WDT_0_TMOUT_MASK);
 }
 
@@ -379,7 +379,7 @@ void pi_ext_por_deassert(void)
 	srs_pwrctrl = 0;
 	cmvi_por_pi_prepare();
 	cmvi_por_pi_unprepare();
-	printf("CMVI: POR deassert !\n");
+	printf("CMVI: POR deassert!\n");
 }
 
 /* wakeup source: used for SRS or poweroff wakeup */
@@ -395,17 +395,15 @@ void cmvi_gpio_intr(void)
  */
 void cmvi_vbus_connect_intr(void)
 {
-	printf("CMVI:VBUS !\n");
 }
 
 void cmvi_rtc_alarm_intr(void)
 {
-	printf("CMVI:RTC Alarm !\n");
 }
 
 static void cmvi_srs_enter(void)
 {
-	printf("CMVI:SRS Enter \n");
+	printf("CMVI:SRS Enter\n");
 	srs_pwrctrl = 1;
 	board_cmvi_ddrrst_ctrl(0);	/* dis-connect dram reset ctrl */
 	board_cmvi_disable_por();	/* avoid spurisous POR when wakeup */
