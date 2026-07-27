@@ -166,7 +166,6 @@ static int print( char **out, const char *format, va_list args )
 		}
 	}
 	if (out) **out = '\0';
-	va_end( args );
 	return pc;
 }
 
@@ -183,6 +182,7 @@ int printf(const char *format, ...)
 
 	va_start( args, format );
 	ret =  print( 0, format, args );
+	va_end( args );
 
 	if (in_isr)
 		taskEXIT_CRITICAL_FROM_ISR(uxSavedInterruptStatus);
@@ -194,18 +194,26 @@ int printf(const char *format, ...)
 
 int sprintf(char *out, const char *format, ...)
 {
+	int ret;
 	va_list args;
 
 	va_start( args, format );
-	return print( &out, format, args );
+	ret = print( &out, format, args );
+	va_end( args );
+
+	return ret;
 }
 
 int snprintf( char *buf, unsigned int count, const char *format, ... )
 {
+	int ret;
 	va_list args;
 
 	( void ) count;
 
 	va_start( args, format );
-	return print( &buf, format, args );
+	ret = print( &buf, format, args );
+	va_end( args );
+
+	return ret;
 }

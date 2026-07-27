@@ -190,7 +190,7 @@ RPMSG_LITE_INCS	:= \
 
 MCU_REMAP_SIZE	:= $(shell grep ^CONFIG_$(ARCH)_REMAP_SIZE $(DOT_CONFIG))
 MCU_REMAP_ADDRESS:= $(shell grep ^CONFIG_$(ARCH)_REMAP_ADDRESS $(DOT_CONFIG))
-MCU_CFLAGS	+= -DCONFIG_$(ARCH)_RPMSG \
+MCU_CFLAGS	+= -DCONFIG_$(ARCH)_RPMSG -DSDK_OS_FREE_RTOS \
 		-D$(strip $(MCU_REMAP_SIZE)) \
 		-D$(strip $(MCU_REMAP_ADDRESS))
 MCU_INCLUDES	+= $(RPMSG_LITE_INCS)
@@ -221,7 +221,7 @@ $(TARGET_ELF): $(MCU_OBJS) $(MCU_LINKER) $(DOT_CONFIG)
 	@$(MCU_CC) -Wl,--start-group $(MCU_OBJS) -Wl,--end-group $(MCU_LDFLAGS) -o $@
 	@$(MCU_NM) -n $@ | grep -v '\( [aUw] \)|\(__crc__\)' > $(subst .elf,.map,$@)
 	@$(MCU_OBJDUMP) -D $@ > $(subst .elf,.elf.dump,$@)
-	@echo "Build Summary for $(TARGET_ELF):"
+	@echo "Build Summary for $@:"
 	@echo "--------------------------------------------------"
 	@$(MCU_SZ) --format=berkeley $@
 	@echo "--------------------------------------------------"
@@ -314,9 +314,7 @@ clean:
 # 	uint8_t header[8];
 # }
 install:
-ifneq ("$(CONFIG_BOOT_$(ARCH))","y")
-	@install -D $(TARGET_BIN) $(ENV_INS_ROOT)/lib/firmware/rproc-ambarella-rproc-fw
-endif
+	@install -D $(TARGET_ELF) $(ENV_INS_ROOT)/usr/lib/firmware/rproc-ambarella-rproc-fw
 	@install -D $(TARGET_HDR_BIN) $(ENV_IMG_ROOT)/$(ARCH)_IMG.bin
 	@install -D $(TARGET_BIN) $(ENV_IMG_ROOT)/$(ARCH).bin
 	@install -D $(TARGET_BIN) $(ENV_IMG_ROOT)/$(ARCH_LOWER_CASE).bin

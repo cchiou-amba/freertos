@@ -55,7 +55,7 @@ __attribute__((weak)) void test_cm3_rpmsg(void) { ; }
 
 void rpmsg_lite_remote(void)
 {
-#ifdef CONFIG_BOOT_CM3
+#ifndef CONFIG_CM3_DELAYBOOT
     (void)env_memcpy((void *)(RSC_TABLE_ADDR), &rsc_table, sizeof(rsc_table));
 #endif
 

@@ -64,7 +64,7 @@ static int spi_virtio_cb(void *binding, struct virtio_pkt *pkt, uint32_t num)
     u8 cs_id, bits_per_word;
     u8 *tx_buf = NULL;
     u8 *rx_buf = NULL;
-    u32 tx_len, rx_len;
+    u32 tx_len = 0, rx_len = 0;
     struct spi_transfer_result *result = NULL;
     u32 freq, mode;
     u8 i = 0;

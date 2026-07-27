@@ -15,6 +15,12 @@ MEMORY
 }
 ENTRY(start_handler)
 
+PHDRS
+{
+	fst_pt PT_LOAD;
+	snd_pt PT_LOAD;
+}
+
 _Min_Stack_Size = 2048;		/* default msp stack size */
 VECTOR_RAM_SIZE = 128 * 4;	/* CV75 aligned to 128 interrupt vectors */
 
@@ -25,7 +31,7 @@ SECTIONS
 		KEEP(*startup.o (.text.fst_boot_vector))
 		KEEP(*startup.o (.text.fst_boot_text))
 		. = ALIGN(4);
-	} > RAM
+	} > RAM :fst_pt
 
 	.snd_boot 0x00010000 : AT (ADDR(.fst_boot) + SIZEOF(.fst_boot))
 	{
@@ -64,12 +70,12 @@ SECTIONS
 		. = ALIGN(4);
 		*(.data*)
 		. = ALIGN(4);
-	} > IRAM
+	} > IRAM :snd_pt
 
 	.resource_table :
 	{
 		KEEP(*(.resource_table))
-	} > IRAM
+	} > IRAM :snd_pt
 	. = ALIGN(4);
 	__snd_ram_end__ = .;
 
@@ -78,10 +84,11 @@ SECTIONS
 		. = ALIGN(8);
 		KEEP(*(.bss.noinit*))
 		. = ALIGN(8);
-	} > IRAM
+	} > IRAM :NONE
+
 	_bss_noinit = .;
 
-	.bss :
+	.bss (NOLOAD):
 	{
 		. = ALIGN(8);
 		_sbss = .;
@@ -91,7 +98,7 @@ SECTIONS
 		. = ALIGN(8);
 		_ebss = .;
 		__bss_end__ = _ebss;
-	} >IRAM
+	} > IRAM :NONE
 
 	. = ALIGN(4);
 	__relocate_start__ = LOADADDR(.snd_boot);
