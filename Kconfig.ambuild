@@ -6,8 +6,8 @@
 
 config CONFIG_BOOT_FREERTOS
 	bool "Boot FreeRTOS"
-	depends on CONFIG_CHIP_CV72 || CONFIG_CHIP_CV3AD685 || \
-		CONFIG_CHIP_CV75 || CONFIG_CHIP_N1_655
+	depends on ($(AMBA_SOC) = "cv72") || ($(AMBA_SOC) = "cv3ad685") || \
+		($(AMBA_SOC) = "cv75") || ($(AMBA_SOC) = "n1_655")
 	default n
 
 ### M3
@@ -16,8 +16,8 @@ visible if CONFIG_BOOT_FREERTOS
 
 config CONFIG_BOOT_CM3
 	bool "Boot Cortex-M3"
-	depends on CONFIG_CHIP_CV72 || CONFIG_CHIP_CV3AD685 || \
-		CONFIG_CHIP_CV75 || CONFIG_CHIP_N1_655
+	depends on ($(AMBA_SOC) = "cv72") || ($(AMBA_SOC) = "cv3ad685") || \
+		($(AMBA_SOC) = "cv75") || ($(AMBA_SOC) = "n1_655")
 	default n
 
 menu "Features"
@@ -29,7 +29,7 @@ config CONFIG_CM3_LOG_CONSOLE
 
 config CONFIG_CM3_CMVI_LOG_CONSOLE
 	bool "Enable CMVI Log Console"
-	depends on CONFIG_CM3_LOG_CONSOLE && CONFIG_CHIP_CV75
+	depends on CONFIG_CM3_LOG_CONSOLE && ($(AMBA_SOC) = "cv75")
 
 config CONFIG_CM3_UART_LOG_CONSOLE
 	int "UART Log Console Number"
@@ -69,7 +69,8 @@ endmenu  # Features
 endmenu  # Cortex-M3
 
 menu "Cortex-R52"
-visible if CONFIG_BOOT_FREERTOS && (CONFIG_CHIP_N1_655 || CONFIG_CHIP_CV3AD685)
+visible if CONFIG_BOOT_FREERTOS && \
+	(($(AMBA_SOC) = "n1_655") || ($(AMBA_SOC) = "cv3ad685"))
 
 config CONFIG_BOOT_R52
 	bool "Boot Cortex-R52"
