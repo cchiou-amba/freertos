@@ -16,6 +16,7 @@
 #if defined(CMVI_SUPPORT_ONCHIP)
 static uint32_t srs_pwrctrl = 0;
 static uint32_t srs_auto_wkup_enable = 0;
+static uint32_t srs_auto_wkup_delay_ms = 50; /* default matches legacy vTaskDelay(50) */
 static volatile uint32_t suspend_state = 0;
 static EventGroupHandle_t cmvi_EventGroupHandle;
 static StaticEventGroup_t cmvi_CreatedEventGroup;
@@ -417,7 +418,9 @@ void cmvipwr_task(void *data)
 				* keep the original clock source configure
 				* for simplicit [console interaction stuck]
 				*/
-				vTaskDelay(50);
+				if (srs_auto_wkup_delay_ms) {
+					vTaskDelay(srs_auto_wkup_delay_ms);
+				}
 				cmvi_wkup_exit();
 				cmvi_wkup_post();
 			}
@@ -471,6 +474,16 @@ int cmd_reset(int argc, char *argv[])
 	return 0;
 }
 CMD_EXPORT_ALIAS(cmd_reset,reset,reset PI);
+
+void cmvi_srs_auto_wkup_cfg(uint32_t enable, uint32_t delay_ms)
+{
+	srs_auto_wkup_enable = enable ? 1u : 0u;
+	if (delay_ms > 0u) {
+		srs_auto_wkup_delay_ms = delay_ms;
+	}
+	printf("srs_auto_wakeup:%s delay_ms=%lu\n",
+		srs_auto_wkup_enable ? "Yes" : "NO", (unsigned long)srs_auto_wkup_delay_ms);
+}
 
 /* srs auto wakeup switch */
 int cmd_autowkup(int argc, char *argv[])
