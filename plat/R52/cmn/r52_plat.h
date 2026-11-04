@@ -11,12 +11,9 @@
 
 #include <r52_help.h>
 
-/* CV3AD685: 288_SPI,
- * N1_655  : 160_SPI,
- * Use 288_SPI For both chips.
- */
-#define SPI_IRQ_RAW_START		(480)
-#define INSTALLED_IRQ_VECTORS		(32 + 288)
+/* GICv3 full 1024 vector table on R52 */
+#define SPI_IRQ_RAW_START		(0)
+#define INSTALLED_IRQ_VECTORS		(GIC_TOTAL_IRQ_VECTORS)
 /**********************************************************/
 #define SI_CR52_CONFIG_BASE	(0xFFF17000)
 #define CG_SSI_SI_REG_OFFSET	(0x18)

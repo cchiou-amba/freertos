@@ -113,9 +113,15 @@ static void spi_safety_disable(u8 spi_id)
 static u32 spi_get_clk_source(void)
 {
     u32 clk;
+    u32 div;
     clk = current_cpufreq();
     clk = clk / 2; // clk / 2 is the llpp clock
-    clk = clk / readl( SI_CR52_CONFIG_BASE + CG_SSI_SI_REG_OFFSET); //gclk_ssi
+    div = readl(SI_CR52_CONFIG_BASE + CG_SSI_SI_REG_OFFSET);
+    if (div == 0) {
+        div = 2;
+        writel(SI_CR52_CONFIG_BASE + CG_SSI_SI_REG_OFFSET, div);
+    }
+    clk = clk / div; //gclk_ssi
     return clk;
 }
 
@@ -221,17 +227,17 @@ int spi_xfer_irq(struct spi_bus *bus)
         case SPI_STATE_BUSY_TX_AND_RX:
             writel(bus->regbase + SPI_IMR_OFFSET, SPI_TXEIS_MASK | SPI_RXFIS_MASK);
             writel(bus->regbase + SPI_TXFTLR_OFFSET, 0);
-            writel(bus->regbase + SPI_RXFTLR_OFFSET, 1);
+            writel(bus->regbase + SPI_RXFTLR_OFFSET, 0);
             break;
         case SPI_STATE_BUSY_TX_THEN_RX:
             writel(bus->regbase + SPI_IMR_OFFSET, SPI_TXEIS_MASK | SPI_RXFIS_MASK);
             writel(bus->regbase + SPI_TXFTLR_OFFSET, 0);
-            writel(bus->regbase + SPI_RXFTLR_OFFSET, 1);
+            writel(bus->regbase + SPI_RXFTLR_OFFSET, 0);
             break;
         case SPI_STATE_BUSY_TX:
             writel(bus->regbase + SPI_IMR_OFFSET, SPI_TXEIS_MASK | SPI_RXFIS_MASK);
             writel(bus->regbase + SPI_TXFTLR_OFFSET, 0);
-            writel(bus->regbase + SPI_RXFTLR_OFFSET, 1);
+            writel(bus->regbase + SPI_RXFTLR_OFFSET, 0);
             break;
         default:
             printf("SPI bus %u not in valid state %d\n", bus->dev.id, bus->status);
@@ -250,9 +256,22 @@ int spi_xfer_irq(struct spi_bus *bus)
             pdFALSE, pdMS_TO_TICKS(100));
 
         if (bits == 0) {
+            if (bus->rx_cnt > 0 && readl(bus->regbase + SPI_RXFLR_OFFSET) > 0) {
+                spi_rx_from_fifo(bus);
+            }
+            if (bus->tx_cnt == 0 && bus->rx_cnt == 0) {
+                break;
+            }
             ret = -1;
             printf("SPI transfer timeout\n");
             goto exit;
+        }
+
+        if (bus->rx_cnt > 0 && readl(bus->regbase + SPI_RXFLR_OFFSET) > 0) {
+            spi_rx_from_fifo(bus);
+        }
+        if (bus->tx_cnt > 0 && readl(bus->regbase + SPI_TXFLR_OFFSET) < FIFO_THRESHOLD) {
+            spi_tx_to_fifo(bus);
         }
 
         if (bits & SPI_EVENT_RX_READY) {
@@ -320,6 +339,7 @@ int spi_write_then_read(spi_cfg_t *spi_cfg, spi_write_then_read_t *spi_write_the
     cr0.s.tx_lsb = !!(spi_cfg->spi_mode & SPI_LSB_FIRST);
     cr0.s.rx_lsb = !!(spi_cfg->spi_mode & SPI_LSB_FIRST);
     cr0.s.residue = 1;
+    bus->dev.cs_id = spi_write_then_read->cs_id;
     bus->status = SPI_STATE_BUSY_TX_THEN_RX;
     buffer_size = spi_write_then_read->w_size + spi_write_then_read->r_size;
     transfer_buffer = (u8 *)pvPortMalloc(buffer_size);

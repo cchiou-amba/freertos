@@ -164,8 +164,11 @@ typedef struct irq_manager_s
 {
 	void *data;
 	irq_handler_t handler;
+	uint32_t irq_count;
 } irq_manager_t;
 
 extern int request_irq(uint32_t irq, uint32_t level, irq_handler_t handler, void *data, const char *name);
+extern uint32_t r52_irq_get_count(uint32_t irq);
+extern int r52_irq_is_enabled(uint32_t irq);
 #endif
 #endif

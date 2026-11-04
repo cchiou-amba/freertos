@@ -26,6 +26,9 @@
 #define configSUPPORT_STATIC_ALLOCATION		1
 #define configSUPPORT_DYNAMIC_ALLOCATION	1
 #define configUSE_PORT_OPTIMISED_TASK_SELECTION	1
+#define configUSE_TRACE_FACILITY		1
+#define configUSE_STATS_FORMATTING_FUNCTIONS	1
+#define configCOMMAND_INT_MAX_OUTPUT_SIZE	1024
 
 /* Other RTOS feature flags (mutexes, semaphores, etc.) */
 #define configUSE_MUTEXES			1

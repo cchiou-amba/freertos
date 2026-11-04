@@ -194,6 +194,10 @@ el2_reset_handler:
 	setup_mpu_el1 1, XPRBAR(0xf6000000, SH_NONE, AP_RW, 0), XPRLAR(0xf601ffff, ATTR_IDX_NORMAL_NC)
 	/* ddr memory as normal memory, no cache: can execute code */
 	setup_mpu_el1 2, XPRBAR(0x00000000, SH_NONE, AP_RW, 0), XPRLAR(0x7fcfffff, ATTR_IDX_NORMAL_NC)
+	/* peripheral MMIO (UART/GPIO/RCT) as device memory: execute never */
+	setup_mpu_el1 3, XPRBAR(0xe0000000, SH_NONE, AP_RW, 1), XPRLAR(0xf5ffffff, ATTR_IDX_DEVICE)
+	/* GICv3 and Safety Island MMIO as device memory: execute never */
+	setup_mpu_el1 4, XPRBAR(0xf7000000, SH_NONE, AP_RW, 1), XPRLAR(0xffffffff, ATTR_IDX_DEVICE)
 
 	/* enable SCTRL for MPU at EL1 */
 	ldr	r1, =MPU_CTRL_ENABLE

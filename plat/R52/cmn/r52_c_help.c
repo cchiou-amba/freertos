@@ -187,19 +187,14 @@ void arch52_tick_event_restart(void)
 int request_irq(uint32_t irq, uint32_t type,
 	irq_handler_t handler, void *data, const char *name)
 {
-	uint32_t offset;
-
 	(void)name;
 	BUG_ON(irq >= GIC_TOTAL_IRQ_VECTORS);
 
 	gic_irq_disable(irq);
 
-	if (irq < 32)
-		offset = irq;
-	else
-	 	offset = irq - SPI_INT_VEC(SPI_IRQ_RAW_START);
-	irq_manager[offset].handler = handler;
-	irq_manager[offset].data = data;
+	irq_manager[irq].handler = handler;
+	irq_manager[irq].data = data;
+	irq_manager[irq].irq_count = 0;
 
 	gic_irq_set_type(irq, type);
 	DSB();
@@ -231,19 +226,36 @@ int arch52_system_init(void)
 /* check portASM.S, FreeRTOS_IRQ_Handler */
 void vApplicationIRQHandler(uint32_t irq)
 {
-	uint32_t offset;
 	BUG_ON(irq >= GIC_TOTAL_IRQ_VECTORS);
 
 	irq &= 0x3FF;	/* only 10bits */
-	if (irq < 32)
-		offset = irq;
-	else
-	 	offset = irq - SPI_INT_VEC(SPI_IRQ_RAW_START);
+	irq_manager[irq].irq_count++;
 
-	if (irq_manager[offset].handler != NULL)
-		irq_manager[offset].handler(irq_manager[offset].data);
+	if (irq_manager[irq].handler != NULL)
+		irq_manager[irq].handler(irq_manager[irq].data);
 
 	return;
+}
+
+uint32_t r52_irq_get_count(uint32_t irq)
+{
+	if (irq >= GIC_TOTAL_IRQ_VECTORS)
+		return 0;
+	return irq_manager[irq].irq_count;
+}
+
+int r52_irq_is_enabled(uint32_t irq)
+{
+	uint32_t dist_base = gic_distr_cbar();
+	uint32_t redist_base = dist_base + GIC_REDIST_SGIPPI;
+
+	if (irq >= GIC_TOTAL_IRQ_VECTORS)
+		return 0;
+
+	if (irq < 32)
+		return !!(readl(redist_base + GICD_ISENABLER0) & (1U << (irq % 32)));
+	else
+		return !!(readl(dist_base + GICD_ISENABLER0 + (irq / 32) * 4) & (1U << (irq % 32)));
 }
 
 /******************** [EL1 undef/abort/prefetch] ************************************/

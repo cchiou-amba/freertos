@@ -35,77 +35,15 @@ static void boot_crashed(void)
 }
 
 #if defined(CONFIG_BOOT_R52)
-#include <i2c.h>
-#include <ambhw/gpio.h>
+#include <uart.h>
 #include <ambhw/spi.h>
-
-#define EEPROM_ADDR			   (0x54)
-#define EEPROM_READ_SIZE       (2048)
-#define EEPROM_DATA_BASE_ADDR  (0x40000000)
-#define EEPROM_WRITE_SUCCESS   (0x12345678)
-#define EEPROM_WRITE_FAILED    (0x0)
-#define TASK_EEPROM_STACK_SIZE (128 + EEPROM_READ_SIZE)
-#define TASK_EEPROM_PRI		   (tskIDLE_PRIORITY + 4)
-
-static StackType_t task_eeprom_stack[TASK_EEPROM_STACK_SIZE] __attribute__((aligned(8)));
-static StaticTask_t tasktcb_eeprom;
-
-extern void virtio_i2c_init(int id);
-extern void virtio_gpio_init(void);
-extern void virtio_spi_init(int id);
-
-static void eeprom_task_entry(void *arg)
-{
-	int rval = 0;
-	uint8_t read_addr[2] = {0x00,0x00};
-	uint8_t read_data[EEPROM_READ_SIZE];
-	struct i2c_msg msg[2];
-	msg[0].buf = read_addr;
-	msg[0].len = 2;
-	msg[1].buf = read_data;
-	msg[1].len = EEPROM_READ_SIZE;
-	rval = i2c_read(I2C2,EEPROM_ADDR,msg);
-	uint32_t *data32 = (uint32_t *)read_data;
-
-	if (rval != 0) {
-		printf("i2c read failed\n");
-		writel(EEPROM_DATA_BASE_ADDR + EEPROM_READ_SIZE, EEPROM_WRITE_FAILED);
-		goto END;
-	}
-
-	for (int i = 0; i < EEPROM_READ_SIZE / 4; i++) {
-		writel(EEPROM_DATA_BASE_ADDR + i * 4, data32[i]);
-		__DSB();
-	}
-
-	writel(EEPROM_DATA_BASE_ADDR + EEPROM_READ_SIZE, EEPROM_WRITE_SUCCESS);
-
-END:
-	printf("status:%08x\n", readl(EEPROM_DATA_BASE_ADDR + EEPROM_READ_SIZE));
-	vTaskDelete(NULL);
-}
-
-static void eeprom_task_init(void)
-{
-	TaskHandle_t taskhandler;
-	taskhandler = xTaskCreateStatic(
-		eeprom_task_entry,
-		"eeprom",
-		TASK_EEPROM_STACK_SIZE,
-		NULL,
-		TASK_EEPROM_PRI,
-		task_eeprom_stack,
-		&tasktcb_eeprom);
-}
+#include "r52_cli.h"
 
 void r52_hw_init(void)
 {
-	i2c_init(I2C2, 100000, 1);
+	console_init();
 	spi_init(SPI1);
-	eeprom_task_init();
-	virtio_gpio_init();
-	virtio_i2c_init(I2C2);
-	virtio_spi_init(SPI1);
+	r52_cli_task_init();
 }
 #endif
 

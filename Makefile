@@ -65,7 +65,7 @@ MCU_CFLAGS	:= $(MCU_CMN_FLAGS) -Wall -Os
 MCU_AFLAGS	:= $(MCU_CMN_FLAGS) -D__ASM__
 MCU_LDFLAGS	:= \
 	$(MCU_CMN_FLAGS) \
-	-nostartfiles -nostdlib -lgcc -lm -lc \
+	-nostartfiles -nostdlib -lc -lm -lgcc \
 	-Wl,--gc-sections -Wl,--build-id=none -Bstatic
 
 # Linker script selection
@@ -119,7 +119,6 @@ MCU_FILES	+= \
 	source/main.c \
 	driver/spinlock.S \
 	driver/cmd_utils.c \
-	driver/shell.c \
 	driver/print.c \
 	driver/console/console.c \
 	driver/wdt.c \
@@ -127,6 +126,17 @@ MCU_FILES	+= \
 	driver/idc.c \
 	driver/rct.c \
 	driver/cmvi_pwr.c
+
+ifeq ($(ARCH),R52)
+MCU_FILES	+= \
+	third_party/FreeRTOS-Plus-CLI/FreeRTOS_CLI.c \
+	cli/vt100_line.c \
+	cli/r52_cli.c \
+	cli/imu_tui.c \
+	driver/r52/icm20648.c
+else
+MCU_FILES	+= driver/shell.c
+endif
 
 CM3_SOURCE := driver/gpio.c
 
@@ -145,7 +155,12 @@ MCU_INCLUDES	:= \
 	-Iplat/$(ARCH)/cmn \
 	-IFreeRTOS/include \
 	-IFreeRTOS/portable/GCC/ARM_$(ARCH) \
-	-I$(MCU_EXTRA_INC)
+	-Ithird_party/FreeRTOS-Plus-CLI \
+	-Icli
+
+ifneq ($(MCU_EXTRA_INC),)
+MCU_INCLUDES	+= -I$(MCU_EXTRA_INC)
+endif
 
 # Console configuration
 ifeq ("$(CONFIG_$(ARCH)_LOG_CONSOLE)","y")

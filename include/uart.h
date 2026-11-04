@@ -51,6 +51,16 @@
 #endif
 #endif
 
+#define UART_FC_OFFSET			0x08
+#define UART_FC_FIFO_EN			0x01
+#define UART_FC_RX_RESET		0x02
+#define UART_FC_TX_RESET		0x04
+#define CG_UART3_REG			0xEC17071CU
+#define UART3_IRQ			148U
+
 void console_init(void);
+void console_putchar(char c);
+int console_getchar(void);
+int console_getc_timeout(uint32_t timeout_ms);
 
 #endif
