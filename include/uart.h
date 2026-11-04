@@ -55,7 +55,7 @@
 #define UART_FC_FIFO_EN			0x01
 #define UART_FC_RX_RESET		0x02
 #define UART_FC_TX_RESET		0x04
-#define CG_UART3_REG			0xEC17071CU
+#define CG_UART3_REG			0xED08071CU
 #define UART3_IRQ			148U
 
 void console_init(void);
