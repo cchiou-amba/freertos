@@ -1,0 +1,3 @@
+[submodule "third_party/FreeRTOS-Plus-CLI"]
+	path = third_party/FreeRTOS-Plus-CLI
+	url = https://github.com/cchiou-amba/FreeRTOS-Plus-CLI.git
