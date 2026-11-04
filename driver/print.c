@@ -12,6 +12,7 @@
 
 #define PAD_RIGHT	1
 #define PAD_ZERO	2
+#define PAD_PLUS	4
 #define PRINT_BUF_LEN	64
 
 extern void console_putchar(char c);
@@ -68,8 +69,14 @@ static int printi(char **out, int i, int b, int sg, int width, int pad, int letb
 	register unsigned int u = i;
 
 	if (i == 0) {
-		print_buf[0] = '0';
-		print_buf[1] = '\0';
+		if (sg && b == 10 && (pad & PAD_PLUS)) {
+			print_buf[0] = '+';
+			print_buf[1] = '0';
+			print_buf[2] = '\0';
+		} else {
+			print_buf[0] = '0';
+			print_buf[1] = '\0';
+		}
 		return prints (out, print_buf, width, pad);
 	}
 
@@ -98,6 +105,15 @@ static int printi(char **out, int i, int b, int sg, int width, int pad, int letb
 		else {
 			*--s = '-';
 		}
+	} else if (sg && b == 10 && (pad & PAD_PLUS)) {
+		if( width && (pad & PAD_ZERO) ) {
+			printchar (out, '+');
+			++pc;
+			--width;
+		}
+		else {
+			*--s = '+';
+		}
 	}
 
 	return pc + prints (out, s, width, pad);
@@ -115,13 +131,14 @@ static int print( char **out, const char *format, va_list args )
 			width = pad = 0;
 			if (*format == '\0') break;
 			if (*format == '%') goto out;
-			if (*format == '-') {
+			while (*format == '-' || *format == '+' || *format == '0') {
+				if (*format == '-')
+					pad |= PAD_RIGHT;
+				else if (*format == '+')
+					pad |= PAD_PLUS;
+				else if (*format == '0')
+					pad |= PAD_ZERO;
 				++format;
-				pad = PAD_RIGHT;
-			}
-			while (*format == '0') {
-				++format;
-				pad |= PAD_ZERO;
 			}
 			for ( ; *format >= '0' && *format <= '9'; ++format) {
 				width *= 10;

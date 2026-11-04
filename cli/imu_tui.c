@@ -79,6 +79,7 @@ int imu_tui_format_frame(char *buf, size_t buf_size, const imu_tui_state_t *st)
     int len = snprintf(buf, buf_size,
         "\x1b[H"
         "+----------------------------------------------------------------------+\r\n"
+        "|            AMBARELLA N1-655 CORTEX-R52 IMU MONITOR                   |\r\n"
         "| [TDK ICM-20648 | SI_SSI1:CS0 | 0xE0]  Frame: %-6u  Rate: %2u Hz %s |\r\n"
         "+----------------------------------------------------------------------+\r\n"
         "| ACC-X: %+5d mg %s  Min: %+5d  Max: %+5d |\r\n"
@@ -88,7 +89,7 @@ int imu_tui_format_frame(char *buf, size_t buf_size, const imu_tui_state_t *st)
         "| GYR-X: %+5d dps %s  Min: %+5d  Max: %+5d |\r\n"
         "| GYR-Y: %+5d dps %s  Min: %+5d  Max: %+5d |\r\n"
         "| GYR-Z: %+5d dps %s  Min: %+5d  Max: %+5d |\r\n"
-        "+----------------------------------------------------------------------+\r\n"
+        "+-------------------------- ATTITUDE & TILT ---------------------------+\r\n"
         "| Roll: %+4d.%01d deg | Pitch: %+4d.%01d deg | |G|: %4d mg | Temp: %2d.%02d C |\r\n"
         "+----------------------------------------------------------------------+\r\n"
         "| [q/Ctrl-C] Exit  [z] Tare Zero  [r] Reset Min/Max  [p] Pause  [+/-] Rate |\r\n"
@@ -117,7 +118,7 @@ int imu_tui_format_frame(char *buf, size_t buf_size, const imu_tui_state_t *st)
 void imu_tui_run(void)
 {
     imu_tui_state_t st;
-    char frame_buf[2048];
+    static char frame_buf[2048];
 
     memset(&st, 0, sizeof(st));
     st.rate_hz = 10;
